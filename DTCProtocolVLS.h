@@ -65,7 +65,21 @@ namespace DTC_VLS
 		else if ((VariableLengthStringField.Offset + VariableLengthStringField.Length) > MessageSizeField)
 			return "";
 		else
-			return (const char*)&MessageSizeField + VariableLengthStringField.Offset;
+		{
+			int Length = VariableLengthStringField.Length;
+			if (Length > 4096)
+			{
+				Length = 4096;
+			}
+
+			char * BaseMessage = reinterpret_cast< char *>( const_cast<uint16_t *>(&MessageSizeField));
+			char * TerminatorCharacter = BaseMessage + VariableLengthStringField.Offset + Length - 1;
+
+			*TerminatorCharacter = 0;//Make sure there is a null terminator here.
+
+			return (const char*) BaseMessage + VariableLengthStringField.Offset;
+
+		}
 	}
 
 	/*==========================================================================*/
@@ -111,7 +125,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Username, offsetof(s_LogonRequest, Username));
 		}
 
-		void AddUsername(unsigned int StringLength)
+		void AddUsername(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Username, StringLength);
 		}
@@ -121,7 +135,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Password, offsetof(s_LogonRequest, Password));
 		}
 
-		void AddPassword(unsigned int StringLength)
+		void AddPassword(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Password, StringLength);
 		}
@@ -131,7 +145,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, GeneralTextData, offsetof(s_LogonRequest, GeneralTextData));
 		}
 
-		void AddGeneralTextData(unsigned int StringLength)
+		void AddGeneralTextData(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, GeneralTextData, StringLength);
 		}
@@ -145,7 +159,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_LogonRequest, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -155,7 +169,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, HardwareIdentifier, offsetof(s_LogonRequest, HardwareIdentifier));
 		}
 
-		void AddHardwareIdentifier(unsigned int StringLength)
+		void AddHardwareIdentifier(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, HardwareIdentifier, StringLength);
 		}
@@ -165,7 +179,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientName, offsetof(s_LogonRequest, ClientName));
 		}
 
-		void AddClientName(unsigned int StringLength)
+		void AddClientName(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientName, StringLength);
 		}
@@ -240,7 +254,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ResultText, offsetof(s_LogonResponse, ResultText));
 		}
 
-		void AddResultText(unsigned int StringLength)
+		void AddResultText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ResultText, StringLength);
 		}
@@ -250,7 +264,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ReconnectAddress, offsetof(s_LogonResponse, ReconnectAddress));
 		}
 
-		void AddReconnectAddress(unsigned int StringLength)
+		void AddReconnectAddress(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ReconnectAddress, StringLength);
 		}
@@ -260,7 +274,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerName, offsetof(s_LogonResponse, ServerName));
 		}
 
-		void AddServerName(unsigned int StringLength)
+		void AddServerName(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerName, StringLength);
 		}
@@ -270,7 +284,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, SymbolExchangeDelimiter, offsetof(s_LogonResponse, SymbolExchangeDelimiter));
 		}
 
-		void AddSymbolExchangeDelimiter(unsigned int StringLength)
+		void AddSymbolExchangeDelimiter(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, SymbolExchangeDelimiter, StringLength);
 		}
@@ -305,7 +319,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Reason, offsetof(s_Logoff, Reason));
 		}
 
-		void AddReason(unsigned int StringLength)
+		void AddReason(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Reason, StringLength);
 		}
@@ -350,7 +364,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_MarketDataRequest, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -360,7 +374,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_MarketDataRequest, Symbol));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -404,7 +418,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_MarketDepthRequest, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -414,7 +428,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_MarketDepthRequest, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -453,7 +467,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, RejectText, offsetof(s_MarketDataReject, RejectText));
 		}
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -491,7 +505,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, RejectText, offsetof(s_MarketDepthReject, RejectText));
 		}
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -552,7 +566,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_SubmitNewSingleOrder, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -562,7 +576,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SubmitNewSingleOrder, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -572,7 +586,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_SubmitNewSingleOrder, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -582,7 +596,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID, offsetof(s_SubmitNewSingleOrder, ClientOrderID));
 		}
 
-		void AddClientOrderID(unsigned int StringLength)
+		void AddClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID, StringLength);
 		}
@@ -603,7 +617,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, FreeFormText, offsetof(s_SubmitNewSingleOrder, FreeFormText));
 		}
 
-		void AddFreeFormText(unsigned int StringLength)
+		void AddFreeFormText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, FreeFormText, StringLength);
 		}
@@ -662,7 +676,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_SubmitNewSingleOrderInt, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -672,7 +686,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SubmitNewSingleOrderInt, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -682,7 +696,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_SubmitNewSingleOrderInt, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -692,7 +706,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID, offsetof(s_SubmitNewSingleOrderInt, ClientOrderID));
 		}
 
-		void AddClientOrderID(unsigned int StringLength)
+		void AddClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID, StringLength);
 		}
@@ -713,7 +727,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, FreeFormText, offsetof(s_SubmitNewSingleOrderInt, FreeFormText));
 		}
 
-		void AddFreeFormText(unsigned int StringLength)
+		void AddFreeFormText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, FreeFormText, StringLength);
 		}
@@ -766,7 +780,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_CancelReplaceOrder, ServerOrderID));
 		}
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
@@ -776,7 +790,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID, offsetof(s_CancelReplaceOrder, ClientOrderID));
 		}
 
-		void AddClientOrderID(unsigned int StringLength)
+		void AddClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID, StringLength);
 		}
@@ -836,7 +850,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_CancelReplaceOrderInt, ServerOrderID));
 		}
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
@@ -846,7 +860,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID, offsetof(s_CancelReplaceOrderInt, ClientOrderID));
 		}
 
-		void AddClientOrderID(unsigned int StringLength)
+		void AddClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID, StringLength);
 		}
@@ -892,7 +906,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_CancelOrder, ServerOrderID));
 		}
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
@@ -902,7 +916,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID, offsetof(s_CancelOrder, ClientOrderID));
 		}
 
-		void AddClientOrderID(unsigned int StringLength)
+		void AddClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID, StringLength);
 		}
@@ -967,7 +981,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID_1, offsetof(s_SubmitNewOCOOrder, ClientOrderID_1));
 		}
 
-		void AddClientOrderID_1(unsigned int StringLength)
+		void AddClientOrderID_1(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID_1, StringLength);
 		}
@@ -977,7 +991,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID_2, offsetof(s_SubmitNewOCOOrder, ClientOrderID_2));
 		}
 
-		void AddClientOrderID_2(unsigned int StringLength)
+		void AddClientOrderID_2(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID_2, StringLength);
 		}
@@ -987,7 +1001,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, FreeFormText, offsetof(s_SubmitNewOCOOrder, FreeFormText));
 		}
 
-		void AddFreeFormText(unsigned int StringLength)
+		void AddFreeFormText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, FreeFormText, StringLength);
 		}
@@ -997,7 +1011,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_SubmitNewOCOOrder, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -1007,12 +1021,12 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SubmitNewOCOOrder, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
 
-		void AddParentTriggerClientOrderID(unsigned int StringLength)
+		void AddParentTriggerClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ParentTriggerClientOrderID, StringLength);
 		}
@@ -1027,7 +1041,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_SubmitNewOCOOrder, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1105,12 +1119,12 @@ namespace DTC_VLS
 			BaseSize = Size;
 		}
 
-		void AddClientOrderID_1(unsigned int StringLength)
+		void AddClientOrderID_1(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID_1, StringLength);
 		}
 
-		void AddClientOrderID_2(unsigned int StringLength)
+		void AddClientOrderID_2(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID_2, StringLength);
 		}
@@ -1120,7 +1134,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, FreeFormText, offsetof(s_SubmitNewOCOOrderInt, FreeFormText));
 		}
 
-		void AddFreeFormText(unsigned int StringLength)
+		void AddFreeFormText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, FreeFormText, StringLength);
 		}
@@ -1140,7 +1154,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_SubmitNewOCOOrderInt, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -1150,12 +1164,12 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SubmitNewOCOOrderInt, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
 
-		void AddParentTriggerClientOrderID(unsigned int StringLength)
+		void AddParentTriggerClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ParentTriggerClientOrderID, StringLength);
 		}
@@ -1170,7 +1184,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_SubmitNewOCOOrderInt, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1227,7 +1241,7 @@ namespace DTC_VLS
 		int32_t GetRequestID();
 		int32_t GetRequestAllOrders();
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
@@ -1237,7 +1251,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_OpenOrdersRequest, ServerOrderID));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1281,7 +1295,7 @@ namespace DTC_VLS
 		int32_t GetRequestID();
 		int32_t GetNumberOfDays();
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
@@ -1291,7 +1305,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_HistoricalOrderFillsRequest, ServerOrderID));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1329,7 +1343,7 @@ namespace DTC_VLS
 
 		int32_t GetRequestID();
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -1367,7 +1381,7 @@ namespace DTC_VLS
 
 		int32_t GetRequestID();
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1405,7 +1419,7 @@ namespace DTC_VLS
 
 		int32_t GetRequestID();
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -1509,7 +1523,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_OrderUpdate, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -1519,7 +1533,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_OrderUpdate, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -1529,7 +1543,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, PreviousServerOrderID, offsetof(s_OrderUpdate, PreviousServerOrderID));
 		}
 
-		void AddPreviousServerOrderID(unsigned int StringLength)
+		void AddPreviousServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, PreviousServerOrderID, StringLength);
 		}
@@ -1539,7 +1553,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_OrderUpdate, ServerOrderID));
 		}
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
@@ -1549,7 +1563,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ClientOrderID, offsetof(s_OrderUpdate, ClientOrderID));
 		}
 
-		void AddClientOrderID(unsigned int StringLength)
+		void AddClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ClientOrderID, StringLength);
 		}
@@ -1559,12 +1573,12 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ExchangeOrderID, offsetof(s_OrderUpdate, ExchangeOrderID));
 		}
 
-		void AddExchangeOrderID(unsigned int StringLength)
+		void AddExchangeOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ExchangeOrderID, StringLength);
 		}
 
-		void AddLastFillExecutionID(unsigned int StringLength)
+		void AddLastFillExecutionID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, LastFillExecutionID, StringLength);
 		}
@@ -1579,7 +1593,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_OrderUpdate, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1589,7 +1603,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, InfoText, offsetof(s_OrderUpdate, InfoText));
 		}
 
-		void AddInfoText(unsigned int StringLength)
+		void AddInfoText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, InfoText, StringLength);
 		}
@@ -1599,7 +1613,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ParentServerOrderID, offsetof(s_OrderUpdate, ParentServerOrderID));
 		}
 
-		void AddParentServerOrderID(unsigned int StringLength)
+		void AddParentServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ParentServerOrderID, StringLength);
 		}
@@ -1609,7 +1623,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, OCOLinkedOrderServerOrderID, offsetof(s_OrderUpdate, OCOLinkedOrderServerOrderID));
 		}
 
-		void AddOCOLinkedOrderServerOrderID(unsigned int StringLength)
+		void AddOCOLinkedOrderServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, OCOLinkedOrderServerOrderID, StringLength);
 		}
@@ -1619,7 +1633,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, PreviousClientOrderID, offsetof(s_OrderUpdate, PreviousClientOrderID));
 		}
 
-		void AddPreviousClientOrderID(unsigned int StringLength)
+		void AddPreviousClientOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, PreviousClientOrderID, StringLength);
 		}
@@ -1629,7 +1643,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, FreeFormText, offsetof(s_OrderUpdate, FreeFormText));
 		}
 
-		void AddFreeFormText(unsigned int StringLength)
+		void AddFreeFormText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, FreeFormText, StringLength);
 		}
@@ -1689,7 +1703,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, RejectText, offsetof(s_OpenOrdersReject, RejectText));
 		}
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -1742,7 +1756,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_HistoricalOrderFillResponse, Symbol));
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -1752,7 +1766,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_HistoricalOrderFillResponse, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -1762,12 +1776,12 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, ServerOrderID, offsetof(s_HistoricalOrderFillResponse, ServerOrderID));
 		}
 
-		void AddServerOrderID(unsigned int StringLength)
+		void AddServerOrderID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ServerOrderID, StringLength);
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1777,7 +1791,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_HistoricalOrderFillResponse, TradeAccount));
 		}
 
-		void AddUniqueExecutionID(unsigned int StringLength)
+		void AddUniqueExecutionID(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, UniqueExecutionID, StringLength);
 		}
@@ -1839,7 +1853,7 @@ namespace DTC_VLS
 			BaseSize = Size;
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -1849,7 +1863,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_PositionUpdate, Symbol));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -1859,7 +1873,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_PositionUpdate, Exchange));
 		}
 
-		void AddPositionIdentifier(unsigned int StringLength)
+		void AddPositionIdentifier(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, PositionIdentifier, StringLength);
 		}
@@ -1869,7 +1883,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, PositionIdentifier, offsetof(s_PositionUpdate, PositionIdentifier));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1922,7 +1936,7 @@ namespace DTC_VLS
 		int32_t GetTotalNumberMessages();
 		int32_t GetMessageNumber();
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -1970,7 +1984,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_ExchangeListResponse, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -1980,7 +1994,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Description, offsetof(s_ExchangeListResponse, Description));
 		}
 
-		void AddDescription(unsigned int StringLength)
+		void AddDescription(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Description, StringLength);
 		}
@@ -2021,7 +2035,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SymbolsForExchangeRequest, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2063,7 +2077,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_UnderlyingSymbolsForExchangeRequest, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2106,7 +2120,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, UnderlyingSymbol, offsetof(s_SymbolsForUnderlyingRequest, UnderlyingSymbol));
 		}
 
-		void AddUnderlyingSymbol(unsigned int StringLength)
+		void AddUnderlyingSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, UnderlyingSymbol, StringLength);
 		}
@@ -2116,7 +2130,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SymbolsForUnderlyingRequest, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2160,7 +2174,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, SearchText, offsetof(s_SymbolSearchRequest, SearchText));
 		}
 
-		void AddSearchText(unsigned int StringLength)
+		void AddSearchText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, SearchText, StringLength);
 		}
@@ -2170,7 +2184,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SymbolSearchRequest, Exchange));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2206,7 +2220,7 @@ namespace DTC_VLS
 
 		int32_t GetRequestID();
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -2216,7 +2230,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_SecurityDefinitionForSymbolRequest, Symbol)); 
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2296,7 +2310,7 @@ namespace DTC_VLS
 			DisplayPriceMultiplier = 1.0;
 		}
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -2306,7 +2320,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_SecurityDefinitionResponse, Symbol));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2316,7 +2330,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Exchange, offsetof(s_SecurityDefinitionResponse, Exchange));
 		}
 
-		void AddDescription(unsigned int StringLength)
+		void AddDescription(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Description, StringLength);
 		}
@@ -2335,7 +2349,7 @@ namespace DTC_VLS
 		float GetFloatToIntPriceMultiplier();
 		float GetIntToFloatPriceDivisor();
 
-		void AddUnderlyingSymbol(unsigned int StringLength)
+		void AddUnderlyingSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, UnderlyingSymbol, StringLength);
 		}
@@ -2358,7 +2372,7 @@ namespace DTC_VLS
 		uint8_t GetHasMarketDepthData() const;
 		float GetDisplayPriceMultiplier() const;
 
-		void AddExchangeSymbol(unsigned int StringLength)
+		void AddExchangeSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, ExchangeSymbol, StringLength);
 		}
@@ -2402,7 +2416,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, RejectText, offsetof(s_SecurityDefinitionReject, RejectText));
 		}
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -2440,7 +2454,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, TradeAccount, offsetof(s_AccountBalanceRequest, TradeAccount));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -2478,7 +2492,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, RejectText, offsetof(s_AccountBalanceReject, RejectText));
 		}
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
@@ -2525,7 +2539,7 @@ namespace DTC_VLS
 
 		int32_t GetRequestID();
 
-		void AddAccountCurrency(unsigned int StringLength)
+		void AddAccountCurrency(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, AccountCurrency, StringLength);
 		}
@@ -2535,7 +2549,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, AccountCurrency, offsetof(s_AccountBalanceUpdate, AccountCurrency));
 		}
 
-		void AddTradeAccount(unsigned int StringLength)
+		void AddTradeAccount(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, TradeAccount, StringLength);
 		}
@@ -2586,7 +2600,7 @@ namespace DTC_VLS
 
 		uint8_t GetIsPopupMessage();
 
-		void AddUserMessage(unsigned int StringLength)
+		void AddUserMessage(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, UserMessage, StringLength);
 		}
@@ -2621,7 +2635,7 @@ namespace DTC_VLS
 			BaseSize = Size;
 		}
 
-		void AddMessageText(unsigned int StringLength)
+		void AddMessageText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, MessageText, StringLength);
 		}
@@ -2667,7 +2681,7 @@ namespace DTC_VLS
 
 		int32_t GetRequestID();
 
-		void AddSymbol(unsigned int StringLength)
+		void AddSymbol(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Symbol, StringLength);
 		}
@@ -2677,7 +2691,7 @@ namespace DTC_VLS
 			return GetVariableLengthStringField(Size, BaseSize, Symbol, offsetof(s_HistoricalPriceDataRequest, Symbol));
 		}
 
-		void AddExchange(unsigned int StringLength)
+		void AddExchange(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, Exchange, StringLength);
 		}
@@ -2729,7 +2743,7 @@ namespace DTC_VLS
 		DTC::HistoricalPriceDataRejectReasonCodeEnum GetRejectReasonCode();
 		uint16_t GetRetryTimeInSeconds();
 
-		void AddRejectText(unsigned int StringLength)
+		void AddRejectText(uint16_t StringLength)
 		{
 			AddVariableLengthStringField(Size, RejectText, StringLength);
 		}
